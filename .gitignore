@@ -1,0 +1,5 @@
+pom.xml
+*.jar
+*.class
+/target/
+.lein-*
