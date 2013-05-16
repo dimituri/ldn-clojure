@@ -4,6 +4,17 @@
             [compojure.handler :as handler]
             [compojure.route :as route]))
 
+(def counters (agent {}))
+
+(defn assoc-inc [map key]
+  (let [val (get map key)]
+    (assoc map key (if (nil? val) 1 (inc val)))))
+
+(defn register [token]
+  (send counters #(assoc-inc % token))
+  (println @counters))
+
+
 (defn handle-reverse [{words "words"}]
   (let [join #(s/join " " %)]
     (some-> words (s/split #"\s+") reverse join)))
@@ -18,9 +29,13 @@
 (defroutes app-routes
   (GET "/" [] "CLOJURE WEB SERVICE 9000")
   (GET "/reverse" {params :query-params}
-       (handle-reverse params))
+       (do
+         (register "reverse")
+         (handle-reverse params)))
   (GET ["/temp/:from/:to/:value" :value #"-?(?:\d+.)?\d+"] [from to value]
-       (handle-temp from to (-> value read-string double)))
+       (do
+         (register "temp")
+         (handle-temp from to (-> value read-string double))))
   (route/resources "/")
   (route/not-found "Not Found"))
 
