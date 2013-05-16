@@ -30,16 +30,25 @@
   (some-> (-> value (* 5/9) (- 32)) str))
 (defmethod handle-temp :default [_ _ _] nil)
 
+
+(defmacro decorate [f g]
+  `(def ~f (-> ~f ~g)))
+
+(defn with-register [f token]
+  (fn [& args]
+    (register token)
+    (apply f args)))
+
+(decorate handle-reverse (with-register "reverse"))
+(decorate handle-temp (with-register "temp"))
+
+
 (defroutes app-routes
   (GET "/" [] "CLOJURE WEB SERVICE 9000")
   (GET "/reverse" {params :query-params}
-       (do
-         (register "reverse")
-         (handle-reverse params)))
+       (handle-reverse params))
   (GET ["/temp/:from/:to/:value" :value #"-?(?:\d+.)?\d+"] [from to value]
-       (do
-         (register "temp")
-         (handle-temp from to (-> value read-string double))))
+       (handle-temp from to (-> value read-string double)))
   (route/resources "/")
   (route/not-found "Not Found"))
 
