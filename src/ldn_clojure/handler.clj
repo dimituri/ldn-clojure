@@ -1,5 +1,6 @@
 (ns ldn-clojure.handler
-  (:use compojure.core)
+  (:use compojure.core
+        overtone.at-at)
   (:require [clojure.string :as s]
             [compojure.handler :as handler]
             [compojure.route :as route]))
@@ -11,8 +12,11 @@
     (assoc map key (if (nil? val) 1 (inc val)))))
 
 (defn register [token]
-  (send counters #(assoc-inc % token))
-  (println @counters))
+  (send counters #(assoc-inc % token)))
+
+
+(def scheduler-pool (mk-pool))
+(every 5000 #(println @counters) scheduler-pool)
 
 
 (defn handle-reverse [{words "words"}]
