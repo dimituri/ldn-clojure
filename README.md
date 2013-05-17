@@ -1,6 +1,6 @@
 # ldn-clojure
 
-This is a toy image processing service built with Clojure for the
+This is a toy web service built with Clojure for the
 [Latvian Developers Network][ldn] event
 “[Workshop: Clojure][event]”.
 
