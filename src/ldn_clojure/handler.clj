@@ -42,6 +42,7 @@
     (register token)
     (apply f args)))
 
+(decorate handle-add (with-register "add"))
 (decorate handle-reverse (with-register "reverse"))
 (decorate handle-temp (with-register "temp"))
 
@@ -55,7 +56,7 @@
     (GET "/reverse" {params :query-params}
          (handle-reverse params))
     (GET ["/temp/:from/:to/:value" :value number] [from to value]
-         (handle-temp from to (string->double number)))
+         (handle-temp from to (string->double value)))
     (route/resources "/")
     (route/not-found "Not Found")))
 
